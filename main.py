@@ -76,10 +76,17 @@ async def proceed_event(user: User, request: str):
 async def event_handler(reader, writer):
     print("Connection Established")
 
-    user = await connect(reader, writer)
+    try:
+        user = await connect(reader, writer)
+    except Exception as e:
+        return
 
     while True:
-        message = await read_message(reader)
+        try:
+            message = await read_message(reader)
+        except Exception as e:
+            await disconnect(user)
+            return
         if message == "":
             await disconnect(user)
             break
